@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Александр Мельников](https://up.htmlacademy.ru/javascript/26/user/1173827).
-* Наставник: `Неизвестно`.
+* Наставник: [Герман Топалов](https://htmlacademy.ru/profile/topalov).
 
 ---
 
