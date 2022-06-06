@@ -2,10 +2,8 @@
 function getRandomNumber(firstNumber,lastNumber){
   firstNumber = Math.ceil(firstNumber);
   lastNumber = Math.floor(lastNumber);
-  if( firstNumber<0 || lastNumber <0 ){
-    return console.log('Числа не могут быть отрицательными');
-  } else if(firstNumber >= lastNumber){
-    return console.log('Первое число не может быть большего последнего');
+  if( firstNumber<0 || lastNumber <0 || firstNumber >= lastNumber){
+    return;
   }
   return Math.floor(Math.random()*(lastNumber-firstNumber+1)+firstNumber);
 }
