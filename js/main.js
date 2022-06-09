@@ -3,9 +3,7 @@ function getRandomNumber(firstNumber,lastNumber){
   firstNumber = Math.ceil(firstNumber);
   lastNumber = Math.floor(lastNumber);
   if( firstNumber<0 || lastNumber <0 ){
-    return;
-  } else if(firstNumber === lastNumber){
-    return firstNumber;
+    throw new Error('something went wrong');
   } else if(firstNumber > lastNumber){
     return Math.floor(Math.random()*(firstNumber-lastNumber+1)+lastNumber);
   }
