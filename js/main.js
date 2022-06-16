@@ -24,7 +24,7 @@ const textForComment = `Всё отлично!
   Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.
   Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.
   Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.
-  Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!`
+  Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!`;
 
 const ARRAY_SENTENCES = textForComment.split('\n');
 
@@ -63,25 +63,22 @@ const genImageAddressId = getNumberWithoutRepeats(1,25);
 const genCommentId = getNumberWithoutRepeats(1,1000);
 
 //Функция создания комментария
-const createComment = ()=> {
-  return {
-    id:genCommentId(),
-    avatar:`img/avatar-${getRandomPositiveInteger(1,6)}.svg`,
-    message:getRandomArrayElement(ARRAY_SENTENCES).trim(),
-    name:getRandomArrayElement(NAMES)
-  };
-}
+const createComment = ()=> ({
+  id:genCommentId(),
+  avatar:`img/avatar-${getRandomPositiveInteger(1,6)}.svg`,
+  message:getRandomArrayElement(ARRAY_SENTENCES).trim(),
+  name:getRandomArrayElement(NAMES)
+});
 
 // Функция создания объекта c информацией о фото
-const createObject = () => {
-  return {
-    id:genDescriptionId(),
-    url:`photos/${genImageAddressId()}.jpg`,
-    description:getRandomArrayElement(PHOTO_DESCRIPTIONS),
-    likes:getRandomPositiveInteger(15,200),
-    comments:createComment(),
-  };
-}
+const createObject = () => ({
+  id:genDescriptionId(),
+  url:`photos/${genImageAddressId()}.jpg`,
+  description:getRandomArrayElement(PHOTO_DESCRIPTIONS),
+  likes:getRandomPositiveInteger(15,200),
+  comments:createComment(),
+});
 
 //Получение массива объектов
+// eslint-disable-next-line no-unused-vars
 const arrayObject = Array.from({length:25}, createObject);
