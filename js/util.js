@@ -8,17 +8,5 @@ function getRandomPositiveInteger(a, b) {
 //Получение рандомного элемента из переданного массива
 const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length - 1)];
 
-//Функция для получения чисел без повторений
-function getNumberWithoutRepeats(min,max){
-  const arrayRandomValues = [];
-  return function(){
-    let randomNumber = getRandomPositiveInteger(min,max);
-    while(arrayRandomValues.includes(randomNumber)){
-      randomNumber = getRandomPositiveInteger(min,max);
-    }
-    arrayRandomValues.push(randomNumber);
-    return randomNumber;
-  };
-}
-export {getRandomArrayElement,getRandomPositiveInteger,getNumberWithoutRepeats};
+export {getRandomArrayElement,getRandomPositiveInteger};
 
