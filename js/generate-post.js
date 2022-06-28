@@ -1,4 +1,4 @@
-import {getRandomArrayElement,getRandomPositiveInteger,getNumberWithoutRepeats} from './util.js';
+import {getRandomArrayElement,getRandomPositiveInteger} from './util.js';
 
 const NAMES = [
   'Андрей',
@@ -30,31 +30,33 @@ const TEXT_FOR_COMMENT = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
-const genDescriptionId  = getNumberWithoutRepeats(1,25);
-const genImageAddressId = getNumberWithoutRepeats(1,25);
-const genCommentId = getNumberWithoutRepeats(1,999);
-
+const PUBLICATIONS_AMOUNTS = 25;
 //Функция создания комментария
-const createComment = ()=> ({
-  id:genCommentId(),
-  avatar:`img/avatar-${getRandomPositiveInteger(1,6)}.svg`,
-  message:getRandomArrayElement(TEXT_FOR_COMMENT),
-  name:getRandomArrayElement(NAMES)
-});
-
-const numberOfComments = 2;
-const setComments = () =>Array.from({length:numberOfComments},createComment);
+const createComments = (elements)=> {
+  const arrValues = [];
+  for (let i=1;i<=elements;i++){
+    arrValues.push({
+      id:i,
+      avatar:`img/avatar-${getRandomPositiveInteger(1,6)}.svg`,
+      message:getRandomArrayElement(TEXT_FOR_COMMENT),
+      name:getRandomArrayElement(NAMES)
+    });
+  }
+  return arrValues;
+};
 
 // Функция создания объекта c информацией о фото
-const createDescriptionPhoto = () => ({
-  id:genDescriptionId(),
-  url:`photos/${genImageAddressId()}.jpg`,
-  description:getRandomArrayElement(PHOTO_DESCRIPTIONS),
-  likes:getRandomPositiveInteger(15,200),
-  comments:setComments(),
-});
-
-const numberOfObject = 25;
-//Получение массива объектов c с описанием
-const arrayDescriptionsForPhoto = () => Array.from({length:numberOfObject}, createDescriptionPhoto);
-export{arrayDescriptionsForPhoto};
+const createDescriptionsPublications = (elements) => {
+  const arrValues =[];
+  for (let i=1;i<=elements;i++){
+    arrValues.push({
+      id:i,
+      url:`photos/${i}.jpg`,
+      description:getRandomArrayElement(PHOTO_DESCRIPTIONS),
+      likes:getRandomPositiveInteger(15,200),
+      comments:createComments(getRandomPositiveInteger(1,5)),
+    });
+  }
+  return arrValues;
+};
+export{createDescriptionsPublications ,PUBLICATIONS_AMOUNTS};
