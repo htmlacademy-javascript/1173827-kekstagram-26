@@ -1,3 +1,6 @@
 import {createDescriptionsPublications,PUBLICATIONS_AMOUNTS} from './generate-post.js';
 import {renderingPosts} from './rendering-posts.js';
-renderingPosts(createDescriptionsPublications(PUBLICATIONS_AMOUNTS));
+import {getFullScreen} from './rendering-full-screen.js';
+const arrayPosts = createDescriptionsPublications(PUBLICATIONS_AMOUNTS);
+renderingPosts(arrayPosts);
+getFullScreen(arrayPosts);
