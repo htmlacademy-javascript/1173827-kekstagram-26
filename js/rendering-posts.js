@@ -1,9 +1,9 @@
 const picturesForPosts = document.querySelector('.pictures');
 const templatePictures = document.querySelector('#picture').content.querySelector('a');
 
-const renderPosts = (setGeneratedPosts) =>{
+const renderPosts = (setGeneratedPosts) => {
   const fragmentSetPosts = document.createDocumentFragment();
-  setGeneratedPosts.forEach((element)=>{
+  setGeneratedPosts.forEach((element) => {
     const elementTemplate = templatePictures.cloneNode(true);
     elementTemplate.querySelector('img').src = element.url;
     elementTemplate.querySelector('.picture__comments').textContent = element.comments.length ;
@@ -13,5 +13,12 @@ const renderPosts = (setGeneratedPosts) =>{
   });
   picturesForPosts.appendChild(fragmentSetPosts);
 };
-
-export {renderPosts};
+const getIdFullscreenPhoto = (target) => {
+  picturesForPosts.addEventListener('click',(evt) => {
+    const selectedPicture = evt.target.closest('.picture');
+    if(selectedPicture){
+      target(selectedPicture.dataset.userId);
+    }
+  });
+};
+export {renderPosts, getIdFullscreenPhoto};

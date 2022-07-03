@@ -2,7 +2,6 @@ import {checkKeydownEsc} from './util.js';
 const bigPicture = document.querySelector('.big-picture');
 const socialComments = bigPicture.querySelector('.social__comments');
 const cancelButton = bigPicture.querySelector('.big-picture__cancel');
-const pictures = document.querySelector('.pictures');
 
 const createComments = (elements) => {
   let comments ='';
@@ -34,16 +33,7 @@ function handleKeydown(evt){
   }
 }
 
-const getTargetPost = (target)=>{
-  pictures.addEventListener('click',(evt)=>{
-    const selectedPicture = evt.target.closest('.picture');
-    if(selectedPicture){
-      target(selectedPicture.dataset.userId);
-    }
-  });
-};
-
-const getInfoPosts = (post)=>{
+const renderFullscreen = (post) => {
   bigPicture.classList.remove('hidden');
   bigPicture.querySelector('.social__comment-count').classList.add('hidden');
   bigPicture.querySelector('.comments-loader').classList.add('hidden');
@@ -56,7 +46,7 @@ const getInfoPosts = (post)=>{
   createComments(post.comments);
 
   cancelButton.addEventListener('click', hideElements);
-  window.addEventListener('keydown',handleKeydown);
+  window.addEventListener('keydown', handleKeydown);
 };
 
-export{getInfoPosts,getTargetPost};
+export{renderFullscreen};
