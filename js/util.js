@@ -1,3 +1,5 @@
+const KEY_ESC = 'Escape';
+const checkKeydownEsc = (evt) => evt.key === KEY_ESC;
 //Функция, возвращающая случайное целое число
 function getRandomPositiveInteger(a, b) {
   const lower = Math.ceil(Math.min(Math.abs(a), Math.abs(b)));
@@ -8,5 +10,5 @@ function getRandomPositiveInteger(a, b) {
 //Получение рандомного элемента из переданного массива
 const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length - 1)];
 
-export {getRandomArrayElement,getRandomPositiveInteger};
+export {getRandomArrayElement,getRandomPositiveInteger,checkKeydownEsc};
 

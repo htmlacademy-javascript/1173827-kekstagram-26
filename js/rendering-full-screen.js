@@ -1,56 +1,62 @@
+import {checkKeydownEsc} from './util.js';
 const bigPicture = document.querySelector('.big-picture');
-const socialComments = document.querySelector('.social__comments');
-const cancelButton = document.querySelector('.big-picture__cancel');
+const socialComments = bigPicture.querySelector('.social__comments');
+const cancelButton = bigPicture.querySelector('.big-picture__cancel');
+const pictures = document.querySelector('.pictures');
 
-const createComments = (elements)=>{
-  socialComments.innerHTML='';
+const createComments = (elements) => {
+  let comments ='';
+  elements.forEach((element) => {
+    comments += `
+    <li class="social__comment">
+    <img
+        class="social__picture"
+        src="${element.avatar}"
+        alt="${element.name}"
+        width="35" height="35">
+    <p class="social__text">${element.message}</p>
+</li>
+    `;
 
-  elements.forEach((element)=>{
-    const tagLi = document.createElement('li');
-    tagLi.classList.add('social__comment');
-    const tagImg = document.createElement('img');
-    tagImg.classList.add('social__picture');
-    tagImg.src = element.avatar;
-    tagImg.alt = element.name;
-    tagImg.width = 35;
-    tagImg.height = 35;
-    tagLi.appendChild(tagImg);
-    const tagP = document.createElement('p');
-    tagP.classList.add('social__text');
-    tagP.textContent = element.message;
-    tagLi.appendChild(tagP);
-    socialComments.appendChild(tagLi);
+  });
+  socialComments.innerHTML = comments;
+};
+
+const hideElements = () => {
+  bigPicture.classList.add('hidden');
+  document.querySelector('body').classList.remove('modal-open');
+  cancelButton.removeEventListener('click', hideElements);
+  window.removeEventListener('keydown',handleKeydown);
+};
+function handleKeydown(evt){
+  if(checkKeydownEsc(evt)){
+    hideElements();
+  }
+}
+
+const getTargetPost = (target)=>{
+  pictures.addEventListener('click',(evt)=>{
+    const selectedPicture = evt.target.closest('.picture');
+    if(selectedPicture){
+      target(selectedPicture.dataset.userId);
+    }
   });
 };
 
-const getFullScreen = (arrayPosts)=>{
-  const pictures = document.querySelectorAll('.picture');
+const getInfoPosts = (post)=>{
+  bigPicture.classList.remove('hidden');
+  bigPicture.querySelector('.social__comment-count').classList.add('hidden');
+  bigPicture.querySelector('.comments-loader').classList.add('hidden');
+  document.querySelector('body').classList.add('modal-open');
 
-  for (let i=0;i<pictures.length;i++){
-    pictures[i].addEventListener('click', ()=>{
-      bigPicture.querySelector('.big-picture__img').querySelector('img').src = pictures[i].querySelector('.picture__img').src;
-      bigPicture.querySelector('.likes-count').textContent = pictures[i].querySelector('.picture__likes').textContent;
-      bigPicture.querySelector('.comments-count').textContent = pictures[i].querySelector('.picture__comments').textContent;
-      bigPicture.querySelector('.social__caption').textContent = arrayPosts[i].description;
-      createComments(arrayPosts[i].comments);
-      bigPicture.querySelector('.social__comment-count').classList.add('hidden');
-      bigPicture.querySelector('.comments-loader').classList.add('hidden');
-      bigPicture.classList.remove('hidden');
-      document.querySelector('body').classList.add('modal-open');
-    });
-  }
+  bigPicture.querySelector('.big-picture__img').querySelector('img').src = post.url;
+  bigPicture.querySelector('.likes-count').textContent = post.likes;
+  bigPicture.querySelector('.comments-count').textContent = post.comments.length;
+  bigPicture.querySelector('.social__caption').textContent = post.description;
+  createComments(post.comments);
+
+  cancelButton.addEventListener('click', hideElements);
+  window.addEventListener('keydown',handleKeydown);
 };
 
-cancelButton.addEventListener('click', ()=>{
-  bigPicture.classList.add('hidden');
-  document.querySelector('body').classList.remove('modal-open');
-});
-
-document.addEventListener('keydown',(evt)=>{
-  if(evt.key==='Escape'){
-    bigPicture.classList.add('hidden');
-    document.querySelector('body').classList.remove('modal-open');
-  }
-});
-
-export{getFullScreen};
+export{getInfoPosts,getTargetPost};

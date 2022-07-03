@@ -1,6 +1,9 @@
 import {createDescriptionsPublications,PUBLICATIONS_AMOUNTS} from './generate-post.js';
-import {renderingPosts} from './rendering-posts.js';
-import {getFullScreen} from './rendering-full-screen.js';
+import {renderPosts} from './rendering-posts.js';
+import {getInfoPosts,getTargetPost} from './rendering-full-screen.js';
 const arrayPosts = createDescriptionsPublications(PUBLICATIONS_AMOUNTS);
-renderingPosts(arrayPosts);
-getFullScreen(arrayPosts);
+renderPosts(arrayPosts);
+getTargetPost((postId) => {
+  const selectedPost = arrayPosts.find((item) => item.id === +postId);
+  getInfoPosts(selectedPost);
+});
