@@ -1,3 +1,9 @@
 import {createDescriptionsPublications,PUBLICATIONS_AMOUNTS} from './generate-post.js';
-import {renderingPosts} from './rendering-posts.js';
-renderingPosts(createDescriptionsPublications(PUBLICATIONS_AMOUNTS));
+import {renderPosts,getIdFullscreenPhoto} from './rendering-posts.js';
+import {renderFullscreen} from './rendering-full-screen.js';
+const arrayPosts = createDescriptionsPublications(PUBLICATIONS_AMOUNTS);
+renderPosts(arrayPosts);
+getIdFullscreenPhoto((postId) => {
+  const selectedPost = arrayPosts.find((item) => item.id === +postId);
+  renderFullscreen(selectedPost);
+});

@@ -32,7 +32,7 @@ const TEXT_FOR_COMMENT = [
 
 const PUBLICATIONS_AMOUNTS = 25;
 //Функция создания комментария
-const createComments = (elements)=> {
+const createComments = (elements) => {
   const arrValues = [];
   for (let i=1;i<=elements;i++){
     arrValues.push({
@@ -59,4 +59,4 @@ const createDescriptionsPublications = (elements) => {
   }
   return arrValues;
 };
-export{createDescriptionsPublications ,PUBLICATIONS_AMOUNTS};
+export{createDescriptionsPublications, PUBLICATIONS_AMOUNTS};
