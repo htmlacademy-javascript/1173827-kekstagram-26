@@ -25,7 +25,7 @@ const hideElements = () => {
   bigPicture.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   cancelButton.removeEventListener('click', hideElements);
-  window.removeEventListener('keydown',handleKeydown);
+  document.removeEventListener('keydown',handleKeydown);
 };
 function handleKeydown(evt){
   if(checkKeydownEsc(evt)){
@@ -46,7 +46,7 @@ const renderFullscreen = (post) => {
   createComments(post.comments);
 
   cancelButton.addEventListener('click', hideElements);
-  window.addEventListener('keydown', handleKeydown);
+  document.addEventListener('keydown', handleKeydown);
 };
 
 export{renderFullscreen};
