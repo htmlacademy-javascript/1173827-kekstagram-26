@@ -1408,3 +1408,9 @@ main {
 .hidden {
   display: none;
 }
+
+.text-error{
+  color:#c6f78b;
+  font-size: 12px;
+  text-transform:none;
+}
