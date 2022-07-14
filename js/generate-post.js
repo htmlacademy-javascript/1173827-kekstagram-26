@@ -54,7 +54,7 @@ const createDescriptionsPublications = (elements) => {
       url:`photos/${i}.jpg`,
       description:getRandomArrayElement(PHOTO_DESCRIPTIONS),
       likes:getRandomPositiveInteger(15,200),
-      comments:createComments(getRandomPositiveInteger(1,5)),
+      comments:createComments(getRandomPositiveInteger(1,15)),
     });
   }
   return arrValues;
