@@ -40,10 +40,10 @@ const hideFormCreatingPost = () => {
   imageEditingForm.reset();
   pristine.reset();
   closeButton.removeEventListener('click',hideFormCreatingPost);
-  document.removeEventListener('keydown',handleKeydown);
+  document.removeEventListener('keydown',onKeydown);
 };
 
-function handleKeydown(evt) {
+function onKeydown(evt) {
   if(checkKeydownEsc(evt)) {
     if(evt.target.matches('input')&&evt.target.type === 'text'||evt.target.matches('textarea')) {
       return;
@@ -52,14 +52,14 @@ function handleKeydown(evt) {
   }
 }
 
-const handleLoadPicture = () => {
+const loadPictureHandler = () => {
   imgUploadOverlay.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
   closeButton.addEventListener('click', hideFormCreatingPost);
-  document.addEventListener('keydown', handleKeydown);
+  document.addEventListener('keydown', onKeydown);
 };
 
-fileUpload.addEventListener('change',handleLoadPicture);
+fileUpload.addEventListener('change',loadPictureHandler);
 
 imageEditingForm.addEventListener('submit',(evt) => {
   const valid = pristine.validate();
