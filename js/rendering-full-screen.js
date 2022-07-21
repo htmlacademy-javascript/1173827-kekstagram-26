@@ -6,10 +6,10 @@ const cancelButton = bigPicture.querySelector('.big-picture__cancel');
 const socialCommentCount = bigPicture.querySelector('.social__comment-count');
 const uploadComments = bigPicture.querySelector('.social__comments-loader');
 
-const hideElements = () => {
+const closeFullScreenView = () => {
   bigPicture.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
-  cancelButton.removeEventListener('click', hideElements);
+  cancelButton.removeEventListener('click', closeFullScreenView);
   document.removeEventListener('keydown',onKeydown);
   uploadComments.onclick  = null;
   uploadComments.classList.remove('hidden');
@@ -17,7 +17,7 @@ const hideElements = () => {
 
 function onKeydown(evt) {
   if(checkKeydownEsc(evt)) {
-    hideElements();
+    closeFullScreenView();
   }
 }
 
@@ -91,7 +91,7 @@ const renderFullscreen = (post) => {
   hideExcessComments(comments);
   uploadComments.onclick = getHidedComments(comments);
 
-  cancelButton.addEventListener('click', hideElements);
+  cancelButton.addEventListener('click', closeFullScreenView);
   document.addEventListener('keydown', onKeydown);
 };
 

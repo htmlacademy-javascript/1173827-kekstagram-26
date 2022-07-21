@@ -1,5 +1,5 @@
-import {checkKeydownEsc} from './util.js';
-
+import {checkKeydownEsc,showAlert} from './util.js';
+import {sendData} from './api.js';
 const MAX_COMMENT_LENGTH = 140;
 const MIN_SCALE_VALUE = 25;
 const MAX_SCALE_VALUE = 100;
@@ -33,6 +33,7 @@ const scaleControl = imgUploadScale.querySelector('.scale__control--value');
 const effectsList = imageEditingForm.querySelector('.effects__list');
 const effectLevelSlider = imageEditingForm.querySelector('.effect-level__slider');
 const effectLevelValue = imageEditingForm.querySelector('.effect-level__value');
+const uploadSubmit = imageEditingForm.querySelector('.img-upload__submit');
 
 let effectName;
 
@@ -64,13 +65,35 @@ pristine.addValidator(textHashtag,validateHashtag,'Некорректно вве
 pristine.addValidator(textHashtag,findDuplicatesHashtag,'Нельзя использовать одинаковые хеш-теги');
 pristine.addValidator(textComment,validateComment,`Не больше ${MAX_COMMENT_LENGTH} символов`);
 
-imageEditingForm.addEventListener('submit',(evt) => {
-  const valid = pristine.validate();
-  if(!valid) {
-    evt.preventDefault();
-  }
-});
+const blockSubmitButton = () => {
+  uploadSubmit.disabled = true;
+  uploadSubmit.textContent = 'Сохраняю...';
+};
 
+const unblockSubmitButton = () => {
+  uploadSubmit.disabled = false;
+  uploadSubmit.textContent = 'Сохранить';
+};
+
+const setUserFormSubmit = (onSuccess) => {
+  imageEditingForm.addEventListener('submit',(evt) => {
+    evt.preventDefault();
+    if(pristine.validate()) {
+      blockSubmitButton();
+      sendData(
+        () => {
+          onSuccess();
+          unblockSubmitButton();
+        },
+        () => {
+          showAlert('Не удалось отправить форму');
+          unblockSubmitButton();
+        },
+        new FormData(evt.target)
+      );
+    }
+  });
+};
 imgUploadScale.addEventListener('click',(evt) => {
   const scaleSmaller = evt.target.closest('.scale__control--smaller');
   const scaleBigger = evt.target.closest('.scale__control--bigger');
@@ -157,12 +180,12 @@ const applySelectedEffect = (evt) => {
   }
 };
 
-const hideFormCreatingPost = () => {
+const closePostEditingForm = () => {
   imgUploadOverlay.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   imageEditingForm.reset();
   pristine.reset();
-  closeButton.removeEventListener('click',hideFormCreatingPost);
+  closeButton.removeEventListener('click',closePostEditingForm);
   document.removeEventListener('keydown',onKeydown);
   effectsList.removeEventListener('change',applySelectedEffect);
   effectLevelSlider.noUiSlider.reset();
@@ -176,17 +199,19 @@ function onKeydown(evt) {
     if(evt.target.matches('input')&&evt.target.type === 'text'||evt.target.matches('textarea')) {
       return;
     }
-    hideFormCreatingPost();
+    closePostEditingForm();
   }
 }
 
 const loadPictureHandler = () => {
   imgUploadOverlay.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
-  closeButton.addEventListener('click', hideFormCreatingPost);
+  closeButton.addEventListener('click', closePostEditingForm);
   document.addEventListener('keydown', onKeydown);
   effectsList.addEventListener('change',applySelectedEffect);
   imgUploadEffectLevel.classList.add('hidden');
 };
 
 fileUpload.addEventListener('change',loadPictureHandler);
+
+export {setUserFormSubmit,closePostEditingForm};
