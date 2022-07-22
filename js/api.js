@@ -1,8 +1,10 @@
-const getData = (onSuccess,onFail) => {
+import { showAlert } from './util.js';
+
+const getData = (onSuccess) => {
   fetch('https://26.javascript.pages.academy/kekstagram/data')
     .then((response) => response.json())
-    .then((picture) => onSuccess(picture))
-    .catch(() => onFail('Не удалось получить данные'));
+    .then((posts) => onSuccess(posts))
+    .catch(() => showAlert('Не удалось получить данные'));
 };
 
 const sendData = (onSuccess, onFail, body) => {
@@ -16,10 +18,10 @@ const sendData = (onSuccess, onFail, body) => {
       if (response.ok) {
         onSuccess();
       } else {
-        onFail('Не удалось отправить форму');
+        onFail();
       }
     })
-    .catch(() => onFail('Не удалось отправить форму'));
+    .catch(() => onFail());
 };
 
 export {getData,sendData};

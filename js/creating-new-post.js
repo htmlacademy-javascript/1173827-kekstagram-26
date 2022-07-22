@@ -1,4 +1,5 @@
-import {checkKeydownEsc,showAlert} from './util.js';
+import {checkKeydownEsc} from './util.js';
+import { showSuccessMessage, showErrorMessage } from './form-submit-message.js';
 import {sendData} from './api.js';
 const MAX_COMMENT_LENGTH = 140;
 const MIN_SCALE_VALUE = 25;
@@ -65,35 +66,6 @@ pristine.addValidator(textHashtag,validateHashtag,'Некорректно вве
 pristine.addValidator(textHashtag,findDuplicatesHashtag,'Нельзя использовать одинаковые хеш-теги');
 pristine.addValidator(textComment,validateComment,`Не больше ${MAX_COMMENT_LENGTH} символов`);
 
-const blockSubmitButton = () => {
-  uploadSubmit.disabled = true;
-  uploadSubmit.textContent = 'Сохраняю...';
-};
-
-const unblockSubmitButton = () => {
-  uploadSubmit.disabled = false;
-  uploadSubmit.textContent = 'Сохранить';
-};
-
-const setUserFormSubmit = (onSuccess) => {
-  imageEditingForm.addEventListener('submit',(evt) => {
-    evt.preventDefault();
-    if(pristine.validate()) {
-      blockSubmitButton();
-      sendData(
-        () => {
-          onSuccess();
-          unblockSubmitButton();
-        },
-        () => {
-          showAlert('Не удалось отправить форму');
-          unblockSubmitButton();
-        },
-        new FormData(evt.target)
-      );
-    }
-  });
-};
 imgUploadScale.addEventListener('click',(evt) => {
   const scaleSmaller = evt.target.closest('.scale__control--smaller');
   const scaleBigger = evt.target.closest('.scale__control--bigger');
@@ -188,6 +160,7 @@ const closePostEditingForm = () => {
   closeButton.removeEventListener('click',closePostEditingForm);
   document.removeEventListener('keydown',onKeydown);
   effectsList.removeEventListener('change',applySelectedEffect);
+  imageEditingForm.removeEventListener('submit',onPostSubmit);
   effectLevelSlider.noUiSlider.reset();
   imgPreview.removeAttribute('style');
   imgPreview.classList.value = null;
@@ -203,15 +176,41 @@ function onKeydown(evt) {
   }
 }
 
-const loadPictureHandler = () => {
+const loadPostEditingForm = () => {
   imgUploadOverlay.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
   closeButton.addEventListener('click', closePostEditingForm);
   document.addEventListener('keydown', onKeydown);
   effectsList.addEventListener('change',applySelectedEffect);
   imgUploadEffectLevel.classList.add('hidden');
+  imageEditingForm.addEventListener('submit',onPostSubmit);
+
+};
+const blockSubmitButton = () => {
+  uploadSubmit.disabled = true;
 };
 
-fileUpload.addEventListener('change',loadPictureHandler);
+const unblockSubmitButton = () => {
+  uploadSubmit.disabled = false;
+};
 
-export {setUserFormSubmit,closePostEditingForm};
+function onPostSubmit(evt) {
+  evt.preventDefault();
+  if(pristine.validate()) {
+    blockSubmitButton();
+    sendData(
+      () => {
+        closePostEditingForm();
+        showSuccessMessage();
+        unblockSubmitButton();
+      },
+      () => {
+        showErrorMessage();
+        unblockSubmitButton();
+      },
+      new FormData(evt.target)
+    );
+  }
+}
+
+fileUpload.addEventListener('change',loadPostEditingForm);
