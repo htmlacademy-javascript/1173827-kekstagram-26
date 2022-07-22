@@ -1,5 +1,6 @@
 import {checkKeydownEsc} from './util.js';
-
+import { showSuccessMessage, showErrorMessage } from './form-submit-message.js';
+import {sendData} from './api.js';
 const MAX_COMMENT_LENGTH = 140;
 const MIN_SCALE_VALUE = 25;
 const MAX_SCALE_VALUE = 100;
@@ -33,6 +34,7 @@ const scaleControl = imgUploadScale.querySelector('.scale__control--value');
 const effectsList = imageEditingForm.querySelector('.effects__list');
 const effectLevelSlider = imageEditingForm.querySelector('.effect-level__slider');
 const effectLevelValue = imageEditingForm.querySelector('.effect-level__value');
+const uploadSubmit = imageEditingForm.querySelector('.img-upload__submit');
 
 let effectName;
 
@@ -63,13 +65,6 @@ const validateComment = (value) => value.length <= MAX_COMMENT_LENGTH;
 pristine.addValidator(textHashtag,validateHashtag,'Некорректно введены данные');
 pristine.addValidator(textHashtag,findDuplicatesHashtag,'Нельзя использовать одинаковые хеш-теги');
 pristine.addValidator(textComment,validateComment,`Не больше ${MAX_COMMENT_LENGTH} символов`);
-
-imageEditingForm.addEventListener('submit',(evt) => {
-  const valid = pristine.validate();
-  if(!valid) {
-    evt.preventDefault();
-  }
-});
 
 imgUploadScale.addEventListener('click',(evt) => {
   const scaleSmaller = evt.target.closest('.scale__control--smaller');
@@ -157,14 +152,15 @@ const applySelectedEffect = (evt) => {
   }
 };
 
-const hideFormCreatingPost = () => {
+const closePostEditingForm = () => {
   imgUploadOverlay.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
   imageEditingForm.reset();
   pristine.reset();
-  closeButton.removeEventListener('click',hideFormCreatingPost);
+  closeButton.removeEventListener('click',closePostEditingForm);
   document.removeEventListener('keydown',onKeydown);
   effectsList.removeEventListener('change',applySelectedEffect);
+  imageEditingForm.removeEventListener('submit',onPostSubmit);
   effectLevelSlider.noUiSlider.reset();
   imgPreview.removeAttribute('style');
   imgPreview.classList.value = null;
@@ -176,17 +172,45 @@ function onKeydown(evt) {
     if(evt.target.matches('input')&&evt.target.type === 'text'||evt.target.matches('textarea')) {
       return;
     }
-    hideFormCreatingPost();
+    closePostEditingForm();
   }
 }
 
-const loadPictureHandler = () => {
+const loadPostEditingForm = () => {
   imgUploadOverlay.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
-  closeButton.addEventListener('click', hideFormCreatingPost);
+  closeButton.addEventListener('click', closePostEditingForm);
   document.addEventListener('keydown', onKeydown);
   effectsList.addEventListener('change',applySelectedEffect);
   imgUploadEffectLevel.classList.add('hidden');
+  imageEditingForm.addEventListener('submit',onPostSubmit);
+
+};
+const blockSubmitButton = () => {
+  uploadSubmit.disabled = true;
 };
 
-fileUpload.addEventListener('change',loadPictureHandler);
+const unblockSubmitButton = () => {
+  uploadSubmit.disabled = false;
+};
+
+function onPostSubmit(evt) {
+  evt.preventDefault();
+  if(pristine.validate()) {
+    blockSubmitButton();
+    sendData(
+      () => {
+        closePostEditingForm();
+        showSuccessMessage();
+        unblockSubmitButton();
+      },
+      () => {
+        showErrorMessage();
+        unblockSubmitButton();
+      },
+      new FormData(evt.target)
+    );
+  }
+}
+
+fileUpload.addEventListener('change',loadPostEditingForm);
