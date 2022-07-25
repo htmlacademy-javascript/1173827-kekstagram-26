@@ -1,6 +1,6 @@
-import {checkKeydownEsc} from './util.js';
+import { checkKeydownEsc } from './util.js';
 import { showSuccessMessage, showErrorMessage } from './form-submit-message.js';
-import {sendData} from './api.js';
+import { sendData } from './api.js';
 const MAX_COMMENT_LENGTH = 140;
 const MIN_SCALE_VALUE = 25;
 const MAX_SCALE_VALUE = 100;
@@ -20,6 +20,7 @@ const FILTER_CSS_VALUE = {
   [FILTER_TYPE.PHOBOS]: 'blur',
   [FILTER_TYPE.HEAT]: 'brightness',
 };
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
 const imageEditingForm = document.querySelector('.img-upload__form');
 const fileUpload = imageEditingForm.querySelector('#upload-file');
@@ -66,7 +67,7 @@ pristine.addValidator(textHashtag,validateHashtag,'Некорректно вве
 pristine.addValidator(textHashtag,findDuplicatesHashtag,'Нельзя использовать одинаковые хеш-теги');
 pristine.addValidator(textComment,validateComment,`Не больше ${MAX_COMMENT_LENGTH} символов`);
 
-imgUploadScale.addEventListener('click',(evt) => {
+const onScaleImage = (evt) => {
   const scaleSmaller = evt.target.closest('.scale__control--smaller');
   const scaleBigger = evt.target.closest('.scale__control--bigger');
   let scaleControlValue = +(scaleControl.value).replace('%','');
@@ -80,7 +81,7 @@ imgUploadScale.addEventListener('click',(evt) => {
     imgPreview.style.transform = `scale(${(scaleControlValue)/100})`;
     scaleControl.value = `${scaleControlValue}%`;
   }
-});
+};
 
 const getUpdateSlider = (min,max,start,step,unit='') => ({
   range: {
@@ -161,6 +162,7 @@ const closePostEditingForm = () => {
   document.removeEventListener('keydown',onKeydown);
   effectsList.removeEventListener('change',applySelectedEffect);
   imageEditingForm.removeEventListener('submit',onPostSubmit);
+  imgUploadScale.removeEventListener('click', onScaleImage);
   effectLevelSlider.noUiSlider.reset();
   imgPreview.removeAttribute('style');
   imgPreview.classList.value = null;
@@ -177,6 +179,14 @@ function onKeydown(evt) {
 }
 
 const loadPostEditingForm = () => {
+  const file = fileUpload.files[0];
+  const fileName = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    imgPreview.src = URL.createObjectURL(file);
+  }
+
   imgUploadOverlay.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
   closeButton.addEventListener('click', closePostEditingForm);
@@ -184,8 +194,9 @@ const loadPostEditingForm = () => {
   effectsList.addEventListener('change',applySelectedEffect);
   imgUploadEffectLevel.classList.add('hidden');
   imageEditingForm.addEventListener('submit',onPostSubmit);
-
+  imgUploadScale.addEventListener('click', onScaleImage);
 };
+
 const blockSubmitButton = () => {
   uploadSubmit.disabled = true;
 };

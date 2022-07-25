@@ -1,10 +1,11 @@
-import {checkKeydownEsc} from './util.js';
+import { checkKeydownEsc } from './util.js';
 const SHOWN_COMMENTS_AMOUNT = 5;
 const bigPicture = document.querySelector('.big-picture');
 const socialComments = bigPicture.querySelector('.social__comments');
 const cancelButton = bigPicture.querySelector('.big-picture__cancel');
 const socialCommentCount = bigPicture.querySelector('.social__comment-count');
 const uploadComments = bigPicture.querySelector('.social__comments-loader');
+const commentTemplate = document.querySelector('#comment').content.querySelector('li');
 
 const closeFullScreenView = () => {
   bigPicture.classList.add('hidden');
@@ -22,21 +23,17 @@ function onKeydown(evt) {
 }
 
 const createComments = (elements) => {
-  let comments ='';
-  elements.forEach((element) => {
-    comments += `
-    <li class="social__comment">
-    <img
-        class="social__picture"
-        src="${element.avatar}"
-        alt="${element.name}"
-        width="35" height="35">
-    <p class="social__text">${element.message}</p>
-</li>
-    `;
+  const fragmentSetComment = document.createDocumentFragment();
+  socialComments.innerHTML ='';
 
+  elements.forEach((element) => {
+    const elementCommentTemplate = commentTemplate.cloneNode(true);
+    elementCommentTemplate.querySelector('img').src = element.avatar;
+    elementCommentTemplate.querySelector('img').alt = element.name;
+    elementCommentTemplate.querySelector('p').textContent = element.message;
+    fragmentSetComment.appendChild(elementCommentTemplate);
   });
-  socialComments.innerHTML = comments;
+  socialComments.appendChild(fragmentSetComment);
 };
 
 const getCommentsCount = (value) => {
@@ -95,4 +92,4 @@ const renderFullscreen = (post) => {
   document.addEventListener('keydown', onKeydown);
 };
 
-export{renderFullscreen};
+export{ renderFullscreen };

@@ -1,4 +1,4 @@
-import {checkKeydownEsc} from './util.js';
+import { checkKeydownEsc } from './util.js';
 
 const successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
 const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
