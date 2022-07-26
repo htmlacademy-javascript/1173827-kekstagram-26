@@ -1,16 +1,18 @@
 import { debounce } from './util.js';
 
 const RANDOM_POSTS_AMOUNT = 10;
-const FILTER_BUTTON_DEFAULT  = '#filter-default';
-const FILTER_BUTTON_RANDOM = '#filter-random';
-const FILTER_BUTTON_DISCUSSED = '#filter-discussed';
-const FILTER_BUTTONS = 'img-filters__button';
 const RERENDER_DELAY = 500;
+const ACTIVE_BUTTON = 'img-filters__button--active';
+const ButtonIdFilter = {
+  DEFAULT: 'filter-default',
+  RANDOM: 'filter-random',
+  DISCUSSED: 'filter-discussed',
+};
 
 const picturesForPosts = document.querySelector('.pictures');
 const templatePictures = document.querySelector('#picture').content.querySelector('a');
-const filterSection = document.querySelector('.img-filters');
-const filterFormButtons = filterSection.querySelector('.img-filters__form');
+const filterContainerButtons = document.querySelector('.img-filters');
+const filterFormButtons = filterContainerButtons.querySelector('.img-filters__form');
 
 const renderPosts = (setGeneratedPosts) => {
   const fragmentSetPosts = document.createDocumentFragment();
@@ -25,7 +27,6 @@ const renderPosts = (setGeneratedPosts) => {
     fragmentSetPosts.appendChild(elementTemplate);
   });
   picturesForPosts.appendChild(fragmentSetPosts);
-  filterSection.classList.remove('img-filters--inactive');
 };
 
 const getIdFullscreenPhoto = (target) => {
@@ -37,36 +38,45 @@ const getIdFullscreenPhoto = (target) => {
   });
 };
 
-const editingClassButtons = (addition,idButton) => {
-  if(!addition){
-    filterFormButtons.querySelectorAll(`.${FILTER_BUTTONS}`).
-      forEach((element)=> element.classList.remove(`${FILTER_BUTTONS}--active`));
+const showFilterMenu = () => {
+  filterContainerButtons.classList.remove('img-filters--inactive');
+};
+
+const filterOnRandom = (posts) =>  posts.slice().sort(()=>Math.random() - 0.5).slice(0,RANDOM_POSTS_AMOUNT);
+
+const filterOnDiscussed = (posts) => posts.slice().sort((a,b)=>b.comments.length - a.comments.length);
+
+let currentFilter;
+
+const applyFilter = (idButton, posts) => {
+  if(idButton === currentFilter) {
     return;
   }
-  filterFormButtons.querySelector(idButton).classList.add(`${FILTER_BUTTONS}--active`);
+  currentFilter = idButton;
+
+  if (idButton === ButtonIdFilter.DEFAULT){
+    renderPosts(posts);
+  }
+  if (idButton === ButtonIdFilter.RANDOM){
+    renderPosts(filterOnRandom(posts));
+  }
+  if (idButton === ButtonIdFilter.DISCUSSED){
+    renderPosts(filterOnDiscussed(posts));
+  }
 };
+
+const onFilterChange = debounce(applyFilter,RERENDER_DELAY);
 
 const getFilteredPosts = (posts) => {
-
   renderPosts(posts);
 
-  filterFormButtons.addEventListener('click', debounce((evt) => {
-    editingClassButtons(false);
+  filterFormButtons.addEventListener('click', (evt) => {
 
-    if (evt.target.closest(FILTER_BUTTON_DEFAULT)){
-      editingClassButtons(true,FILTER_BUTTON_DEFAULT);
-      renderPosts(posts);
-    }
-    if (evt.target.closest(FILTER_BUTTON_RANDOM)){
-      editingClassButtons(true,FILTER_BUTTON_RANDOM);
-      renderPosts(posts.slice().sort(()=>Math.random() - 0.5).slice(0,RANDOM_POSTS_AMOUNT));
-    }
-    if (evt.target.closest(FILTER_BUTTON_DISCUSSED)){
-      editingClassButtons(true,FILTER_BUTTON_DISCUSSED);
-      renderPosts(posts.slice().sort((a,b)=>b.comments.length - a.comments.length));
-    }
+    filterFormButtons.querySelector(`.${ACTIVE_BUTTON}`).classList.remove(ACTIVE_BUTTON);
+    evt.target.classList.add(ACTIVE_BUTTON);
+    onFilterChange(evt.target.id, posts);
+  });
 
-  }, RERENDER_DELAY));
 };
 
-export { renderPosts, getIdFullscreenPhoto, getFilteredPosts };
+export { getIdFullscreenPhoto, getFilteredPosts, showFilterMenu, ButtonIdFilter };
