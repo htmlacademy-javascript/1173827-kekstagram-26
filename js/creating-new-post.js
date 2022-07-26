@@ -20,6 +20,7 @@ const FilterCssValue = {
   [FilterType.PHOBOS]: 'blur',
   [FilterType.HEAT]: 'brightness',
 };
+const FileTypes = ['gif', 'jpg', 'jpeg', 'png'];
 
 const imageEditingForm = document.querySelector('.img-upload__form');
 const fileUpload = imageEditingForm.querySelector('#upload-file');
@@ -177,7 +178,18 @@ function onKeydown(evt) {
   }
 }
 
+const loadNewImage = () => {
+  const file = fileUpload.files[0];
+  const fileName = file.name.toLowerCase();
+  const matches = FileTypes.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    imgPreview.src = URL.createObjectURL(file);
+  }
+};
+
 const loadPostEditingForm = () => {
+  loadNewImage();
   imgUploadOverlay.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
   closeButton.addEventListener('click', closePostEditingForm);
