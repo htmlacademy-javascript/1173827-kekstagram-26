@@ -1,11 +1,11 @@
-import {checkKeydownEsc} from './util.js';
+import { checkKeydownEsc } from './util.js';
 import { showSuccessMessage, showErrorMessage } from './form-submit-message.js';
-import {sendData} from './api.js';
+import { sendData } from './api.js';
 const MAX_COMMENT_LENGTH = 140;
 const MIN_SCALE_VALUE = 25;
 const MAX_SCALE_VALUE = 100;
 const SCALE_STEP = 25;
-const FILTER_TYPE = {
+const FilterType = {
   NONE: 'none',
   CHROME: 'chrome',
   SEPIA: 'sepia',
@@ -13,12 +13,12 @@ const FILTER_TYPE = {
   PHOBOS: 'phobos',
   HEAT: 'heat',
 };
-const FILTER_CSS_VALUE = {
-  [FILTER_TYPE.CHROME]: 'grayscale',
-  [FILTER_TYPE.SEPIA]: 'sepia',
-  [FILTER_TYPE.MARVIN]: 'invert',
-  [FILTER_TYPE.PHOBOS]: 'blur',
-  [FILTER_TYPE.HEAT]: 'brightness',
+const FilterCssValue = {
+  [FilterType.CHROME]: 'grayscale',
+  [FilterType.SEPIA]: 'sepia',
+  [FilterType.MARVIN]: 'invert',
+  [FilterType.PHOBOS]: 'blur',
+  [FilterType.HEAT]: 'brightness',
 };
 
 const imageEditingForm = document.querySelector('.img-upload__form');
@@ -66,7 +66,7 @@ pristine.addValidator(textHashtag,validateHashtag,'Некорректно вве
 pristine.addValidator(textHashtag,findDuplicatesHashtag,'Нельзя использовать одинаковые хеш-теги');
 pristine.addValidator(textComment,validateComment,`Не больше ${MAX_COMMENT_LENGTH} символов`);
 
-imgUploadScale.addEventListener('click',(evt) => {
+const onScaleImage = (evt) => {
   const scaleSmaller = evt.target.closest('.scale__control--smaller');
   const scaleBigger = evt.target.closest('.scale__control--bigger');
   let scaleControlValue = +(scaleControl.value).replace('%','');
@@ -80,7 +80,7 @@ imgUploadScale.addEventListener('click',(evt) => {
     imgPreview.style.transform = `scale(${(scaleControlValue)/100})`;
     scaleControl.value = `${scaleControlValue}%`;
   }
-});
+};
 
 const getUpdateSlider = (min,max,start,step,unit='') => ({
   range: {
@@ -125,28 +125,28 @@ effectLevelSlider.noUiSlider.on('update', () => {
 const applySelectedEffect = (evt) => {
   imgPreview.classList.value = null;
   switch (evt.target.value) {
-    case FILTER_TYPE.NONE:
+    case FilterType.NONE:
       setImageEffect('effects__preview--none');
       effectLevelSlider.noUiSlider.updateOptions(getUpdateSlider(0,1,1,0.1));
       break;
-    case FILTER_TYPE.CHROME:
-      setImageEffect('effects__preview--chrome',FILTER_CSS_VALUE.chrome);
+    case FilterType.CHROME:
+      setImageEffect('effects__preview--chrome',FilterCssValue.chrome);
       effectLevelSlider.noUiSlider.updateOptions(getUpdateSlider(0,1,1,0.1));
       break;
-    case FILTER_TYPE.SEPIA:
-      setImageEffect('effects__preview--sepia',FILTER_CSS_VALUE.sepia);
+    case FilterType.SEPIA:
+      setImageEffect('effects__preview--sepia',FilterCssValue.sepia);
       effectLevelSlider.noUiSlider.updateOptions(getUpdateSlider(0,1,1,0.1));
       break;
-    case FILTER_TYPE.MARVIN:
-      setImageEffect('effects__preview--marvin',FILTER_CSS_VALUE.marvin);
+    case FilterType.MARVIN:
+      setImageEffect('effects__preview--marvin',FilterCssValue.marvin);
       effectLevelSlider.noUiSlider.updateOptions(getUpdateSlider(0,100,100,1,'%'));
       break;
-    case FILTER_TYPE.PHOBOS:
-      setImageEffect('effects__preview--phobos',FILTER_CSS_VALUE.phobos);
+    case FilterType.PHOBOS:
+      setImageEffect('effects__preview--phobos',FilterCssValue.phobos);
       effectLevelSlider.noUiSlider.updateOptions(getUpdateSlider(0,3,3,0.1,'px'));
       break;
-    case FILTER_TYPE.HEAT:
-      setImageEffect('effects__preview--heat',FILTER_CSS_VALUE.heat);
+    case FilterType.HEAT:
+      setImageEffect('effects__preview--heat',FilterCssValue.heat);
       effectLevelSlider.noUiSlider.updateOptions(getUpdateSlider(1,3,3,0.1));
       break;
   }
@@ -161,6 +161,7 @@ const closePostEditingForm = () => {
   document.removeEventListener('keydown',onKeydown);
   effectsList.removeEventListener('change',applySelectedEffect);
   imageEditingForm.removeEventListener('submit',onPostSubmit);
+  imgUploadScale.removeEventListener('click', onScaleImage);
   effectLevelSlider.noUiSlider.reset();
   imgPreview.removeAttribute('style');
   imgPreview.classList.value = null;
@@ -184,8 +185,9 @@ const loadPostEditingForm = () => {
   effectsList.addEventListener('change',applySelectedEffect);
   imgUploadEffectLevel.classList.add('hidden');
   imageEditingForm.addEventListener('submit',onPostSubmit);
-
+  imgUploadScale.addEventListener('click', onScaleImage);
 };
+
 const blockSubmitButton = () => {
   uploadSubmit.disabled = true;
 };
