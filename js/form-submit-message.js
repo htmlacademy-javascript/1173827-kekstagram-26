@@ -31,7 +31,7 @@ const showSuccessMessage = () => {
   document.body.appendChild(successMessageTemplate);
 
   successButton.addEventListener('click', closeMessage, { once:true });
-  window.addEventListener('keydown',onKeydown);
+  window.addEventListener('keydown',onKeydown, true);
   window.addEventListener('click',onClickMessageForm);
 };
 
@@ -40,7 +40,7 @@ const showErrorMessage = () => {
   document.body.appendChild(errorMessageTemplate);
 
   errorButton.addEventListener('click', closeMessage, { once:true });
-  window.addEventListener('keydown',onKeydown);
+  window.addEventListener('keydown',onKeydown, true);
   window.addEventListener('click',onClickMessageForm);
 };
 
