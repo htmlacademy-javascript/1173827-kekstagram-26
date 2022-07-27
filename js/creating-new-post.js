@@ -170,12 +170,15 @@ const closePostEditingForm = () => {
 };
 
 function onKeydown(evt) {
-  if(checkKeydownEsc(evt)) {
-    if(evt.target.matches('input')&&evt.target.type === 'text'||evt.target.matches('textarea')) {
-      return;
-    }
-    closePostEditingForm();
+  if(!checkKeydownEsc(evt)) {
+    return;
   }
+
+  if(evt.target.matches('input')&&evt.target.type === 'text'||evt.target.matches('textarea')) {
+    return;
+  }
+
+  closePostEditingForm();
 }
 
 const loadNewImage = () => {
